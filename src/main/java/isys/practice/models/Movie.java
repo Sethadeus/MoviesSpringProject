@@ -1,54 +1,60 @@
 package isys.practice.models;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import isys.practice.dto.MovieDTO;
 import lombok.*;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 
 import javax.persistence.*;
-import java.time.LocalTime;
 
 @Entity @Getter @Setter @ToString @NoArgsConstructor
-public class Movie {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY, generator="movie_gen")
-    @SequenceGenerator(name="movie_gen", sequenceName="MOVIE_SEQ")
-    private Long movie_id;
+@Table(name = "movie")
+public class Movie extends BaseEntity{
     private String title;
-    /*private String description;
+    private String description;
     private int year;
     private String playerUrl;
-    private double IMDBRating;
-    private LocalTime duration;*/
+    private double imdbRating;
+    private LocalTime duration;
+
+    @JsonIgnoreProperties("movies")
     @ManyToMany
     @JoinTable(name = "movie_genre",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    private List<Genre> genre = new ArrayList<>();
+    private List<Genre> genres = new ArrayList<>();
 
-    public void setGenre(List<Genre> genre){
-        this.genre = genre;
+    public Movie(MovieDTO movieDTO){
+        this.title = movieDTO.getTitle();
+        this.description = movieDTO.getDescription();
+        this.year = movieDTO.getYear();
+        this.playerUrl = movieDTO.getPlayerUrl();
+        this.imdbRating = movieDTO.getIMDBRating();
+        this.duration = movieDTO.getDuration();
+        setCreateDate(LocalDateTime.now());
+        setUpdateDate(LocalDateTime.now());
     }
 
-    public Movie(Long movie_id, String title /*,String description, int year, String playerUrl, double IMDBRating, LocalTime duration*/) {
-        this.movie_id = movie_id;
-        this.title = title;
-/*        this.description = description;
-        this.year = year;
-        this.playerUrl = playerUrl;
-        this.IMDBRating = IMDBRating;
-        this.duration = duration;*/
+    public void update(MovieDTO movieDTO){
+        this.title = movieDTO.getTitle();
+        this.description = movieDTO.getDescription();
+        this.year = movieDTO.getYear();
+        this.playerUrl = movieDTO.getPlayerUrl();
+        this.imdbRating = movieDTO.getIMDBRating();
+        this.duration = movieDTO.getDuration();
+        setUpdateDate(LocalDateTime.now());
     }
 
-    public Movie(String title /*, String description, int year, String playerUrl, double IMDBRating, LocalTime duration*/) {
-        this.title = title;
-/*        this.description = description;
-        this.year = year;
-        this.playerUrl = playerUrl;
-        this.IMDBRating = IMDBRating;
-        this.duration = duration;*/
+    public void addGenreToList(Genre gen){
+        genres.add(gen);
     }
+
 }

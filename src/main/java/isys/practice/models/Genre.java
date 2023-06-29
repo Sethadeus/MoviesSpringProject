@@ -1,10 +1,11 @@
 package isys.practice.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
@@ -15,18 +16,20 @@ import javax.persistence.*;
 @Setter
 @ToString
 @NoArgsConstructor
-public class Genre {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private Long genre_id;
+@Table(name = "genre")
+public class Genre extends BaseEntity{
     private String title;
 
-    @ManyToMany(mappedBy = "genre")
-    private List<Movie> movie = new ArrayList<>();
+    @JsonIgnoreProperties("genres")
+    @ManyToMany(mappedBy = "genres")
+    @JsonBackReference
+    private List<Movie> movies = new ArrayList<>();
 
-
-    public Genre(String title) {
+    public Genre(String title){
         this.title = title;
+        setCreateDate(LocalDateTime.now());
+        setUpdateDate(LocalDateTime.now());
     }
+
 }
 
