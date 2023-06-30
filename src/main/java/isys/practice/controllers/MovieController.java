@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @RestController
 @Slf4j
-@RequestMapping("/movie")
+@RequestMapping("/movies")
 @Api(tags="Фильмы", value="Контроллер для работы с фильмами")
 public class MovieController {
 
@@ -28,7 +28,7 @@ public class MovieController {
     @Autowired
     private GenreService genreService;
 
-    @GetMapping("/movies")
+    @GetMapping("/")
     @ApiOperation(
             value = "Найти все",
             notes = "Метод для получения списка всех фильмов"
@@ -44,7 +44,7 @@ public class MovieController {
         return ResponseEntity.ok().body(movies);
     }
 
-    @GetMapping("/movies/{id}")
+    @GetMapping("/{id}")
     @ApiOperation(
             value = "Поиск по id",
             notes = "Метод для поиска фильма по id"
@@ -61,7 +61,7 @@ public class MovieController {
 
     }
 
-    @PostMapping("/movies")
+    @PostMapping("/")
     @ApiOperation(
             value = "Добавить",
             notes = "Метод для добавления нового фильма"
@@ -95,7 +95,7 @@ public class MovieController {
         return ResponseEntity.ok().body(movieService.save(newMovie));
     }
 
-    @PutMapping("/movies/{id}")
+    @PutMapping("/{id}")
     @ApiOperation(
             value = "Обновить",
             notes = "Метод для обновления фильма"
@@ -137,7 +137,7 @@ public class MovieController {
     }
 
 
-    @DeleteMapping("/movies/{id}")
+    @DeleteMapping("/{id}")
     @ApiOperation(
             value = "Удалить",
             notes = "Метод для удаления фильма"
