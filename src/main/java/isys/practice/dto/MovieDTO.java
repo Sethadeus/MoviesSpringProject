@@ -21,4 +21,5 @@ public class MovieDTO {
     private double IMDBRating;
     private LocalTime duration;
     private List<Genre> genres;
+
 }

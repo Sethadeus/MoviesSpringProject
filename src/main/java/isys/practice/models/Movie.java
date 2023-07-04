@@ -32,27 +32,6 @@ public class Movie extends BaseEntity{
     )
     private List<Genre> genres = new ArrayList<>();
 
-    public Movie(MovieDTO movieDTO){
-        this.title = movieDTO.getTitle();
-        this.description = movieDTO.getDescription();
-        this.year = movieDTO.getYear();
-        this.playerUrl = movieDTO.getPlayerUrl();
-        this.imdbRating = movieDTO.getIMDBRating();
-        this.duration = movieDTO.getDuration();
-        setCreateDate(LocalDateTime.now());
-        setUpdateDate(LocalDateTime.now());
-    }
-
-    public void update(MovieDTO movieDTO){
-        this.title = movieDTO.getTitle();
-        this.description = movieDTO.getDescription();
-        this.year = movieDTO.getYear();
-        this.playerUrl = movieDTO.getPlayerUrl();
-        this.imdbRating = movieDTO.getIMDBRating();
-        this.duration = movieDTO.getDuration();
-        setUpdateDate(LocalDateTime.now());
-    }
-
     public void addGenreToList(Genre gen){
         genres.add(gen);
     }

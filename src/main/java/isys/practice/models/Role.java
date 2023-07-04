@@ -14,9 +14,8 @@ import java.util.UUID;
 @Table(name = "roles")
 public class Role {
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(columnDefinition = "uuid")
+    @GeneratedValue(generator = "uuid-ossp")
     private UUID id;
 
     @Enumerated(EnumType.STRING)

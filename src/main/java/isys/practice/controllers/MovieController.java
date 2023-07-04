@@ -2,6 +2,8 @@ package isys.practice.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import isys.practice.Responses.ApiResponse;
+import isys.practice.Responses.ApiResponseWithPages;
 import isys.practice.dto.MovieDTO;
 import isys.practice.models.Genre;
 import isys.practice.models.Movie;
@@ -10,6 +12,7 @@ import isys.practice.services.GenreService;
 import isys.practice.services.MovieService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,32 +36,32 @@ public class MovieController {
             value = "Найти все",
             notes = "Метод для получения списка всех фильмов"
     )
-    public ResponseEntity<?> getAllMovies(){
+    public ResponseEntity<?> getAllMovies(@RequestParam int page, @RequestParam int size) {
         log.info("Received request to get all movies");
-        List<Movie> movies = movieService.findAll();
-        if(movies==null) {
-            log.info("No movies found");
-            return ResponseEntity.ok("Nothing found");
+
+        Page<Movie> moviePage = movieService.findAll(page, size);
+        List<Movie> movies = moviePage.getContent();
+
+        if (movies.isEmpty()) {
+            return ResponseEntity.ok(new ApiResponseWithPages<>("NOT_FOUND", movies, 0, 0, 0));
         }
-        log.info("Returning {} movies", movies.size());
-        return ResponseEntity.ok().body(movies);
+        return ResponseEntity.ok(new ApiResponseWithPages<>("", movies, moviePage.getTotalElements(), moviePage.getTotalPages(),moviePage.getNumber() + 1));
     }
 
     @GetMapping("/{id}")
     @ApiOperation(
             value = "Поиск по id",
-            notes = "Метод для поиска фильма по id"
+            notes = "Метод для получения фильма по id"
     )
-    public ResponseEntity<?> getMovieById(@PathVariable(value="id") UUID movieId){
+    public ResponseEntity<?> getMovieById(@PathVariable(value = "id") UUID movieId) {
         log.info("Received request to get Movie with id {}", movieId);
-        Movie movie = movieService.findById(movieId);
-        if(movie==null) {
-            log.info("Movie with id  {} does not exist", movieId);
-            return ResponseEntity.ok("Movie with id "+movieId+" does not exist");
-        }
-        log.info("Returning Movie with id {} ", movieId);
-        return ResponseEntity.ok().body(movie);
 
+        Movie movie = movieService.findById(movieId);
+
+        if (movie == null) {
+            return ResponseEntity.ok(new ApiResponse<>("NOT_FOUND", null));
+        }
+        return ResponseEntity.ok(new ApiResponse<>("", movie));
     }
 
     @PostMapping("/")
@@ -68,72 +71,25 @@ public class MovieController {
     )
     public ResponseEntity<?> saveMovie(@RequestBody MovieDTO movieDTO) {
         log.info("Received request to save Movie {}", movieDTO.toString());
-        Movie newMovie = new Movie(movieDTO);
-        newMovie.setGenres(new ArrayList<>());
-        boolean tmp = true; // проверка что все связанные сфильмом жанрыдействительно существуют
-        if (movieDTO.getGenres().size()!=0){
-            for(Genre gen: movieDTO.getGenres()){
-                Genre newGen = genreService.findById(gen.getId());
-                if (newGen!=null){
-                    newMovie.addGenreToList(gen);
-                }
-                else{
-                    tmp = false;
-                    break;
-                }
-            }
-            if (tmp){
-                log.info("Movie has been saved {}", movieDTO.toString());
-                return ResponseEntity.ok().body(movieService.save(newMovie));
-            }
-            else {
-                log.info("Error saving Movie, wrong genre id");
-                return ResponseEntity.ok("Wrong genre id");
-            }
+        Movie savedMovie = movieService.save(movieDTO);
+        if (savedMovie==null){
+            return ResponseEntity.ok(new ApiResponse<>("WRONG_ID", null));
         }
-        log.info("Movie has been saved {}", movieDTO.toString());
-        return ResponseEntity.ok().body(movieService.save(newMovie));
+        return ResponseEntity.ok(new ApiResponse<>("", savedMovie));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/")
     @ApiOperation(
             value = "Обновить",
             notes = "Метод для обновления фильма"
     )
-    public ResponseEntity<?> updateMovie(@PathVariable(value="id") UUID movieId, @RequestBody MovieDTO movieDTO){
-        log.info("Received request to update Movie {}", movieDTO.toString());
-        Movie movie = movieService.findById(movieId);
-        if(movie==null) {
-            return ResponseEntity.ok("Movie with id "+movieId+" does not exist");
+    public ResponseEntity<?> updateMovie(@RequestBody Movie movie){
+        log.info("Received request to update Movie {}", movie.toString());
+        Movie updatedMovie = movieService.update(movie);
+        if (updatedMovie==null){
+            return ResponseEntity.ok(new ApiResponse<>("WRONG_ID", null));
         }
-        movie.setGenres(new ArrayList<>());
-        boolean tmp = true;  // проверка что все связанные сфильмом жанрыдействительно существуют
-        if (movieDTO.getGenres().size()!=0){
-            for(Genre gen: movieDTO.getGenres()){
-                Genre newGen = genreService.findById(gen.getId());
-                if (newGen!=null){
-                    movie.addGenreToList(gen);
-                }
-                else{
-                    tmp = false;
-                    break;
-                }
-            }
-            if (tmp){
-                Movie updateMovie = movieService.update(movie,movieDTO);
-                log.info("Movie has been updated {}", movieDTO.toString());
-                return ResponseEntity.ok().body(updateMovie);
-            }
-            else {
-                log.info("Error updating Movie, wrong genre id");
-                return ResponseEntity.ok("Wrong genre id");
-            }
-        }
-        else{
-            Movie updateMovie = movieService.update(movie,movieDTO);
-            log.info("Movie has been updated {}", movieDTO.toString());
-            return ResponseEntity.ok().body(updateMovie);
-        }
+        return ResponseEntity.ok(new ApiResponse<>("", updatedMovie));
     }
 
 
@@ -144,14 +100,11 @@ public class MovieController {
     )
     public ResponseEntity<?> deleteMovie(@PathVariable(value="id") UUID movieId){
         log.info("Received request to delete Movie with id {}", movieId);
-        Movie movie = movieService.findById(movieId);
-        if(movie==null) {
-            log.info("Movie with id {} does not exists", movieId);
-            return ResponseEntity.ok("Movie with id "+movieId+" does not exist");
+
+        if (movieService.delete(movieId)){
+            return ResponseEntity.ok(new ApiResponse<>("", null));
         }
-        movieService.delete(movie);
-        log.info("Movie with id {} has been deleted", movieId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new ApiResponse<>("NOT_EXISTS", null));
     }
 
 }

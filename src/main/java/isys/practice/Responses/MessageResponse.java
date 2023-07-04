@@ -1,4 +1,4 @@
-package isys.practice.dto;
+package isys.practice.Responses;
 
 public class MessageResponse {
     private String message;

@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import isys.practice.Requests.LoginRequest;
+import isys.practice.Requests.SignupRequest;
+import isys.practice.Responses.JwtResponse;
+import isys.practice.Responses.MessageResponse;
 import jakarta.validation.Valid;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +31,13 @@ import isys.practice.repositories.*;
 
 import isys.practice.security.jwt.*;
 import isys.practice.security.services.*;
-import isys.practice.dto.*;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController @Slf4j
 @RequestMapping("/api/auth")
 public class AuthController {
     @Autowired
-    AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     UserRepository userRepository;

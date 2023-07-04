@@ -13,9 +13,8 @@ import java.util.UUID;
 @MappedSuperclass
 public class BaseEntity {
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(columnDefinition = "uuid")
+    @GeneratedValue(generator = "uuid-ossp")
     private UUID id;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;

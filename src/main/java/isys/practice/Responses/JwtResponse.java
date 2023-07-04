@@ -1,4 +1,4 @@
-package isys.practice.dto;
+package isys.practice.Responses;
 
 import lombok.Getter;
 import lombok.Setter;

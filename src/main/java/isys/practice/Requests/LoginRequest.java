@@ -1,4 +1,4 @@
-package isys.practice.dto;
+package isys.practice.Requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

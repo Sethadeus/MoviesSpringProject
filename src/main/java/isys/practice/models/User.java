@@ -17,9 +17,8 @@ import javax.persistence.*;
 @Getter @Setter
 public class User{
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(columnDefinition = "uuid")
+    @GeneratedValue(generator = "uuid-ossp")
     private UUID id;
     private String username;
     private String email;

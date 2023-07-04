@@ -1,6 +1,8 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE genre
 (
-    id          UUID PRIMARY KEY,
+    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title       VARCHAR(255) UNIQUE,
     create_date TIMESTAMP WITHOUT TIME ZONE,
     update_date TIMESTAMP WITHOUT TIME ZONE
@@ -8,7 +10,7 @@ CREATE TABLE genre
 
 CREATE TABLE movie
 (
-    id          UUID PRIMARY KEY,
+    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
     title       VARCHAR(255),
     description TEXT,
     year        INT,
@@ -30,7 +32,7 @@ CREATE TABLE movie_genre
 
 CREATE TABLE users
 (
-    id       UUID PRIMARY KEY,
+    id       UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
     username VARCHAR(255) NOT NULL,
     email    VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL
@@ -38,7 +40,7 @@ CREATE TABLE users
 
 CREATE TABLE roles
 (
-    id   UUID PRIMARY KEY,
+    id   UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
     name VARCHAR(20) NOT NULL
 );
 
@@ -49,8 +51,8 @@ CREATE TABLE user_roles
     PRIMARY KEY (user_id, role_id)
 );
 
-INSERT INTO public.roles VALUES ('09caec76-bc1c-4628-94bd-53c2c61f0894', 'ROLE_USER');
-INSERT INTO public.roles VALUES ('09caec76-bc1c-4628-94bd-53c2c61f0895', 'ROLE_MODERATOR');
-INSERT INTO public.roles VALUES ('09caec76-bc1c-4628-94bd-53c2c61f0896', 'ROLE_ADMIN');
+INSERT INTO public.roles (name) VALUES ('ROLE_USER');
+INSERT INTO public.roles (name) VALUES ('ROLE_MODERATOR');
+INSERT INTO public.roles (name) VALUES ('ROLE_ADMIN');
 
-INSERT INTO public.users VALUES ('04e45937-0019-4f22-b9ec-70b55a7b0f0e', 'Admin', 'Admin@gmail.com', '$2a$10$zh8PSN4Dv20amoPYl9g33ebN3ommp14cTgbcuS37Y0eToqA00yIbS');
+INSERT INTO public.users (username, email, password) VALUES ('Admin', 'Admin@gmail.com', '$2a$10$zh8PSN4Dv20amoPYl9g33ebN3ommp14cTgbcuS37Y0eToqA00yIbS');
